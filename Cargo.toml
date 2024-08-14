@@ -14,3 +14,11 @@ categories = ["command-line-utilities", "development-tools::testing"]
 publish = false
 
 [dependencies]
+clap = { version = "4.5.15", features = ["derive"] }
+rand = "0.8.5"
+
+[dev-dependencies]
+assert_cmd = "2.0.16"
+predicates = "3.1.2"
+regex = "1.10.6"
+tempfile = "3.12.0"
