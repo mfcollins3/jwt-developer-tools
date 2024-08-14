@@ -1,0 +1,16 @@
+[package]
+name = "jwt"
+version = "0.1.0"
+authors = ["Michael F. Collins, III <mfcollins3@me.com>"]
+edition = "2021"
+description = "Tools that developers can use to build software solutions that use JSON web tokens"
+documentation = "https://mfcollins3.github.io/jwt-developer-tools/docs"
+readme = "README.md"
+homepage = "https://mfcollins3.github.com/jwt-developer-tools"
+repository = "https://github.com/mfcollins3/jwt-developer-tools"
+license = "MIT"
+keywords = ["api", "authorization", "cryptography", "jwt", "security"]
+categories = ["command-line-utilities", "development-tools::testing"]
+publish = false
+
+[dependencies]
