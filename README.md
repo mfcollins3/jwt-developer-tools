@@ -1,0 +1,5 @@
+# JWT Developer Tools
+
+## About JWT Developer Tools
+
+JWT Developer Tools are a suite of tools that help developers to build distributed applications that use [JSON Web Tokens](https://jwt.io/introduction) to authorize client application requests sent to APIs on behalf of users. JSON Web Tokens are cryptographically signed containers containing values known as claims that provide information about the client application and user that are sending a request to APIs. APIs use JSON Web Tokens to authorize that the client application and user have permission to perform a specific action using the API. JWT Developer Tools helps developers while building applications. Using JWT Developer Tools, developers can generate JSON Web Tokens for testing, generate cryptographic keys used to sign and verify JSON Web Tokens, verify the signature and contents of JSON Web Tokens, or query the contents of a JSON Web Token. JWT Developer Tools can help developers build their API infrastructure before other authentication and authorization infrastructure is ready, or to help in the configuration of authorization services by supporting the creation of cryptographic signing keys.
