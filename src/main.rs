@@ -18,6 +18,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+use std::path::PathBuf;
+
 use clap::Parser;
 use rand::Rng;
 
@@ -32,17 +34,25 @@ authorization. Developers can use JSON Developer Tools to generate the
 cryptographic keys that are used to sign and verify JSON web tokens, generate
 a JSON web token for debugging and testing, verify a JSON web token, or to
 view the contents of a JSON web token.")]
-struct ProgramArgs {}
+struct ProgramArgs {
+    /// The path where the secret key should be output
+    #[arg(short, long)]
+    output: Option<PathBuf>,
+}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let _args = ProgramArgs::parse();
+    let args = ProgramArgs::parse();
 
+    let mut writer: Box<dyn std::io::Write> = match args.output {
+        Some(path) => Box::new(std::fs::File::create(path).expect("Unable to create file")),
+        None => Box::new(std::io::stdout()),
+    };
     let mut rng = rand::thread_rng();
     let key = (0..32).map(|_| rng.gen::<u8>()).collect::<Vec<u8>>();
     for byte in key {
-        print!("{:02x}", byte);
+        write!(writer, "{:02x}", byte)?;
     }
     
-    println!();
+    writeln!(writer)?;
     Ok(())
 }
