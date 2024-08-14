@@ -18,9 +18,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
+use std::error::Error;
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use rand::Rng;
 
 #[derive(Parser)]
@@ -38,21 +39,65 @@ struct ProgramArgs {
     /// The path where the secret key should be output
     #[arg(short, long)]
     output: Option<PathBuf>,
+
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Subcommand)]
+enum Command {
+    Hs256,
+    Hs384,
+    Hs512,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = ProgramArgs::parse();
+    match args.command {
+        Command::Hs256 => generate_hs256_key(args.output),
+        Command::Hs384 => generate_hs384_key(args.output),
+        Command::Hs512 => generate_hs512_key(args.output),
+    }
+}
 
-    let mut writer: Box<dyn std::io::Write> = match args.output {
-        Some(path) => Box::new(std::fs::File::create(path).expect("Unable to create file")),
+fn generate_hs256_key(output: Option<PathBuf>) -> Result<(), Box<dyn Error>> {
+    generate_and_output_secret_key(32, output)
+}
+
+fn generate_hs384_key(output: Option<PathBuf>) -> Result<(), Box<dyn Error>> {
+    generate_and_output_secret_key(48, output)
+}
+
+fn generate_hs512_key(output: Option<PathBuf>) -> Result<(), Box<dyn Error>> {
+    generate_and_output_secret_key(64, output)
+}
+
+fn generate_and_output_secret_key(
+    length: usize,
+    output: Option<PathBuf>,
+) -> Result<(), Box<dyn Error>> {
+    let secret_key = generate_secret_key(length)?;
+    output_secret_key(output, &secret_key)
+}
+
+fn generate_secret_key(
+    length: usize,
+) -> Result<String, Box<dyn Error>> {
+    let mut rng = rand::thread_rng();
+    let key = (0..length).map(|_| rng.gen::<u8>()).collect::<Vec<u8>>();
+    let key_string = key.iter().map(|byte| format!("{:02x}", byte)).collect::<String>();
+    Ok(key_string)
+}
+
+fn output_secret_key(
+    output: Option<PathBuf>,
+    key: &String,
+) -> Result<(), Box<dyn Error>> {
+    let mut writer: Box<dyn std::io::Write> = match output {
+        Some(path) => Box::new(std::fs::File::create(path)
+            .expect("Unable to create file")),
         None => Box::new(std::io::stdout()),
     };
-    let mut rng = rand::thread_rng();
-    let key = (0..32).map(|_| rng.gen::<u8>()).collect::<Vec<u8>>();
-    for byte in key {
-        write!(writer, "{:02x}", byte)?;
-    }
-    
-    writeln!(writer)?;
+    writeln!(writer, "{}", key)?;
     Ok(())
 }

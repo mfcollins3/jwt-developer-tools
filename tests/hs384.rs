@@ -25,29 +25,29 @@ use std::io::Read;
 use std::process::Command;
 
 #[test]
-fn hs256_secret_key_is_64_hex_characters() -> Result<(), Box<dyn Error>> {
+fn hs384_secret_key_is_64_hex_characters() -> Result<(), Box<dyn Error>> {
     let mut cmd = Command::cargo_bin("jwt")?;
-    cmd.arg("hs256");
+    cmd.arg("hs384");
     cmd.assert()
         .success()
-        .stdout(predicate::str::is_match("^[0-9a-fA-F]{64}\\n$")?);
+        .stdout(predicate::str::is_match("^[0-9a-fA-F]{96}\\n$")?);
     Ok(())
 }
 
 #[test]
-fn hs256_secret_key_is_written_to_file() -> Result<(), Box<dyn Error>> {
+fn hs384_secret_key_is_written_to_file() -> Result<(), Box<dyn Error>> {
     let mut cmd = Command::cargo_bin("jwt")?;
     let temp_file = tempfile::NamedTempFile::new()?;
     let temp_file_path = temp_file.into_temp_path();
     cmd.arg("--output")
         .arg(temp_file_path.to_path_buf())
-        .arg("hs256");
+        .arg("hs384");
     cmd.assert().success();
     let mut file = std::fs::File::open(temp_file_path)?;
     let mut key = String::new();
     let length = file.read_to_string(&mut key)?;
-    assert_eq!(length, 65);
-    let re = regex::Regex::new("^[0-9a-fA-F]{64}\\n$")?;
+    assert_eq!(length, 97);
+    let re = regex::Regex::new("^[0-9a-fA-F]{96}\\n$")?;
     assert!(re.is_match(key.as_str()), "The key is not a valid hexadecimal string");
     Ok(())
 }
