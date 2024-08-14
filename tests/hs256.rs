@@ -18,31 +18,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 
-use clap::Parser;
-use rand::Rng;
+use assert_cmd::prelude::*;
+use predicates::prelude::*;
+use std::error::Error;
+use std::process::Command;
 
-#[derive(Parser)]
-#[command(name = "JWT Developer Tools")]
-#[command(version = "0.1.0")]
-#[command(about = "Tools to help developers generate and verify JSON web tokens")]
-#[command(long_about = "\
-JSON Developer Tools is a set of commands that help developers to build
-distributed solutions that rely on JSON web tokens for identity and
-authorization. Developers can use JSON Developer Tools to generate the
-cryptographic keys that are used to sign and verify JSON web tokens, generate
-a JSON web token for debugging and testing, verify a JSON web token, or to
-view the contents of a JSON web token.")]
-struct ProgramArgs {}
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let _args = ProgramArgs::parse();
-
-    let mut rng = rand::thread_rng();
-    let key = (0..32).map(|_| rng.gen::<u8>()).collect::<Vec<u8>>();
-    for byte in key {
-        print!("{:02x}", byte);
-    }
-    
-    println!();
+#[test]
+fn hs256_secret_key_is_64_hex_characters() -> Result<(), Box<dyn Error>> {
+    let mut cmd = Command::cargo_bin("jwt")?;
+    cmd.assert()
+        .success()
+        .stdout(predicate::str::is_match("^[0-9a-fA-F]{64}")?);
     Ok(())
 }
